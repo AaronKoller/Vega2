@@ -13,6 +13,7 @@
             <strong>Password</strong>
             <br>
             <input [(ngModel)]="password" type="text" (ngModelChange)="passwordChange($event)"> 
+            <span *ngIf="passwordError"  class="alert alert-danger">{{passwordError}}</span>
         </div>
         <br>
         <div class="col-3">
@@ -49,7 +50,8 @@
     
     <div *ngIf="results.length != 0">
             <hr class="style13">
-            <h3>{{resultMessage}}</h3>
+            <h3 *ngIf="generalError" class="alert alert-danger">{{generalError}}></h3>
+            <h3></h3>
             
             <table class="table table-hover table-inverse">
                 <thead>

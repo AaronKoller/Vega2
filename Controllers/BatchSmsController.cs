@@ -40,6 +40,10 @@ public class StoryAddRequest
             //https://www.plivo.com/pricing/JP/#!sms   .04 per sms
             //Twilio                                   .075 per sms
 
+            if(smsObject.Password != "abc123")
+            {
+                return BadRequest("Invalid Password");
+            }
             // Your Account SID from twilio.com/console
             var accountSid = "ACf67abf48da0c0e551fd6303b06bd42f7";
             // Your Auth Token from twilio.com/console

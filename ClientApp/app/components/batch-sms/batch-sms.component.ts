@@ -50,6 +50,8 @@ export class BatchSmsComponent implements OnInit {
   password : string;
   isSMSDisabled = true;
   resultMessage: string;
+  passwordError: string;
+  generalError: string;
 
 
   //
@@ -141,6 +143,8 @@ export class BatchSmsComponent implements OnInit {
 
   public sendSMS($event: any){
     var self = this;
+    self.generalError = "";
+    self.passwordError = "";
     if(self.csvData.length == 0)
       return
 
@@ -191,6 +195,14 @@ export class BatchSmsComponent implements OnInit {
 
         self.csvData = new Array();;
         self.resultsMessage();
+      },err =>{
+        var errorMessage = err._body
+        if(errorMessage === "Invalid Password")
+        {
+          self.passwordError = errorMessage;
+        }else{
+          self.generalError = errorMessage;
+        }
       })
   }
 }
