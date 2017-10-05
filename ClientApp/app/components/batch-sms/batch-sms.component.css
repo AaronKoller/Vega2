@@ -1,0 +1,40 @@
+[hidden] {
+    display: none !important;
+  }
+
+.btn-default {
+    background-color: #337ab7;
+    border-color: #2e6da4;
+    color: white;
+}
+
+textarea {
+    max-width: 500px; 
+    max-height: 80px;
+    height: 80px;
+    resize: none;
+}
+
+hr.style13 {
+	height: 10px;
+	border: 0;
+	box-shadow: 0 10px 10px -9px #4E4E4E inset;
+}
+
+tr:nth-child(even) {background: #E7E7E7}
+tr:nth-child(odd) {background: #FFF}
+
+
+.table-hover tbody tr:hover {
+    /* font-weight: bold; */
+    background: #337ab7;
+    color: white;
+}
+
+.red{
+    color: red
+}
+
+.green{
+    color: green
+}

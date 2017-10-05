@@ -1,0 +1,132 @@
+https://github.com/mosh-hamedani/Vega
+
+To run This
+1. clone from github
+2. VS Code console  'powershell.exe': 
+  a. $Env:ASPNETCORE_ENVIRONMENT = "Development"
+  b. dotnet restore
+  c. webpack --config webpack.config.vendor.js
+  d. dotnet run
+
+
+
+1. SETUP environment
+Extensions:
+CTRL+SHIFT+P 'Install ext'  ==> Install extensions
+angular v2 typescript - John Papa
+ASP.Net Helper - schneiderpat
+Auto Import - Steoates
+Beautify - HookyQR
+C# - Microsoft
+C# Extensions - jchannon
+Docker - Microsoft
+Mssql - Microsoft
+Rest Client - Huachao Mao
+
+Install NPM  (templates
+npm install -g yo
+npm install -g yo generator-aspnetcore-spa
+
+Automapper:
+dotnet add package Automapper
+dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection --version 1.2.0
+
+to ceate a project
+1. go to the new folder
+2. type: yo aspnetcore-spa
+	a. Angular
+	b. unit test: N
+
+
+to set my machine to development
+https://docs.microsoft.com/en-us/aspnet/core/fundamentals/environments
+1. commandline $Env:ASPNETCORE_ENVIRONMENT = "Development"
+
+
+1. Also Install DotNetWatch to keep an eye on code that changes in the C# side of things that webPack cannot catch
+https://github.com/aspnet/DotNetTools/tree/dev/src/Microsoft.DotNet.Watcher.Tools
+2. In Vega.csproj paste 
+<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
+  </ItemGroup>
+3. save
+4. 'dotnet restore' - This will get the new package in the csproj file
+5. 'dotnet watch restore'
+
+6. 'dotnet watch run' Run normally
+
+Install Entity Framework from VS Code terminal
+1. dotnet add Microsoft.EntityFrameworkCore.SqlServer  (from VS Studio)
+
+1. Add EntityFramework CLI
+2. IN the .csproj
+<ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameWorkCore.Tools.DotNet" Version="1.0.0" />
+</ItemGroup>
+3. 'DotNet restore'
+4. after install 'dotnet ef' (optional)
+5. dotnet ef migrations --help (optional)
+6. dotnet ef migrations --help (optional)
+
+
+Ef Create migrations
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet restore
+dotnet ef migrations add InitialModel
+dotnet ef migrations add SeedDatabase
+
+dotnet ef migrations remove  -- will remove the last migration that was now applied to the db
+dotnet ef database update 0 -- will initialize the database
+dotnet ef database update -- this will execute the remaining migrations
+
+keys:
+CTRL + .  - add using statements to the top 
+
+
+github
+
+To delete a file from the repo
+git rm --cached obj\Debug\netcoreapp1.1\Vega.dll
+git rm --cached ClientApp\dist\main-server.js
+
+
+CHapter 3 - Angular
+
+Install the angular CLI tool
+npm install @angular/cli@latest -g
+
+INstall a sample project
+ng new hello-world
+
+npm install @angular/cli@latest --save-dev
+
+To generate an angular component
+ng g component vehicle-form
+
+bootstrap glyph icons
+getbootstrap.com/components
+
+I had the same issue though I had to install webpack first.  As Moises mentioned, refer to 
+Video: 28. - Common RunTime Errors
+
+I did have the /dist/ folder and there were no run time errors, but the following steps worked for me.
+
+1. npm install webpack -g
+2. webpack --config webpack.config.vendor.js
+3. dotnet watch run
+
+You should see the changes in http://localhost:5000/home after that.
+
+
+36 Creating a service
+ng g service make
+
+
+84 npm install ng2-toasty@2.5.0 --save
+webpack --config webpack.config.vendor.js
+webpack
+
+87  https://sentry.io
+
+89 Development vs Production environments and how to enable them
