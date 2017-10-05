@@ -7,7 +7,7 @@
                 <span class='icon-bar'></span>
                 <span class='icon-bar'></span>
             </button>
-            <a class='navbar-brand' [routerLink]="['/home']">My english School Web Tools</a>
+            <a class='navbar-brand' [routerLink]="['/home']">My English School Web Tools</a>
         </div>
         <div class='clearfix'></div>
         <div class='navbar-collapse collapse'>
@@ -17,7 +17,7 @@
                         <span class='glyphicon glyphicon-home'></span> Home
                     </a>
                 </li>
-                <li [routerLinkActive]="['link-active']">
+                <!-- <li [routerLinkActive]="['link-active']">
                     <a [routerLink]="['/vehicles/new']">
                         <span class='glyphicon glyphicon-plus'></span> New Vehicles
                     </a>
@@ -31,10 +31,10 @@
                     <a [routerLink]="['/fetch-data']">
                         <span class='glyphicon glyphicon-th-list'></span> Fetch data
                     </a>
-                </li>
-                    <li [routerLinkActive]="['link-active']">
+                </li> -->
+                <li [routerLinkActive]="['link-active']">
                     <a [routerLink]="['/batchSms']">
-                        <span class='glyphicon glyphicon-phone'></span> Send Message
+                        <span class='glyphicon glyphicon-phone'></span> Send SMS Message
                     </a>
                 </li>
             </ul>

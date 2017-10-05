@@ -1,8 +1,8 @@
 <!-- angular 2 datagrid  https://valor-software.com/ng2-table/ -->
 
-<div class="container">
+<div class="container pull-left">
     <div class="row">
-        <h1>Create a text message..</h1>
+        <h1>Create a SMS message.</h1>
         <strong>Message</strong>
         <textarea class="form-control" [ngModel]="message" (ngModelChange)="textAreaChange($event)" [attr.maxlength]="messageMaxLength" ></textarea>
         <span *ngIf="messageLength > 0">{{messageLength}} of {{messageMaxLength}} characters entered.</span><span style="color: white">.</span>
@@ -20,12 +20,12 @@
             <label class="btn btn-default">Upload Names
                 <input type="file" hidden (change)='changeListener($event)'>
             </label>
-            <button [disabled]="isSMSDisabled" class="btn btn-default" type="submit" (click)="sendSMS($event)" id="test">SendSMS</button>
+            <button [disabled]="isSMSDisabled" class="btn btn-default" type="submit" (click)="sendSMS($event)" id="test">Send SMS</button>
             <span *ngIf="csvData.length != 0">
             </span>
         </div>
-    </div>
-</div>    
+
+<div class="row">
 <div *ngIf="csvData.length != 0">
         <hr class="style13">
         <h3><strong>'{{csvName}}':</strong> {{csvData.length}} name{{csvData.length > 1 ? "s" : ""}} imported.</h3>
@@ -51,7 +51,7 @@
     <div *ngIf="results.length != 0">
             <hr class="style13">
             <h3 *ngIf="generalError" class="alert alert-danger">{{generalError}}></h3>
-            <h3></h3>
+            <h3>{{resultMessage}}</h3>
             
             <table class="table table-hover table-inverse">
                 <thead>
@@ -75,3 +75,5 @@
             </table>
         </div>
     <p [ngClass]="condition ? 'checked' : 'unchecked'"></p>
+</div>
+</div>    

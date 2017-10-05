@@ -15,5 +15,6 @@ namespace Vega.Core.Models
         public List<SMS> People {get; set;}
         public string Message {get; set;}
         public string Password {get; set;}
+        public bool isUseMockData {get; set;}
     }
 }

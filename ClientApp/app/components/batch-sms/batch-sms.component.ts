@@ -23,6 +23,7 @@ interface SMSObject {
   people: any[];
   message: string;
   password: string;
+  isUseMockData: boolean;
 };
 
 @Component({
@@ -52,6 +53,7 @@ export class BatchSmsComponent implements OnInit {
   resultMessage: string;
   passwordError: string;
   generalError: string;
+  isUseMockData = false;
 
 
   //
@@ -151,7 +153,8 @@ export class BatchSmsComponent implements OnInit {
     var smsObject: SMSObject = {
       people:  self.csvData,
       message: self.message,
-      password: self.password
+      password: self.password,
+      isUseMockData: self.isUseMockData
     };
     self.BatchSmsService.sendSmsMessages(smsObject)
       .subscribe(data => {

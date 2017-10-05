@@ -36,7 +36,7 @@ public class StoryAddRequest
         // public async Task<IActionResult> SendSmsMessages([FromBody] IEnumerable<SmsMessage> smsMessages)
         public async Task<IActionResult> SendSmsMessages([FromBody] SMSObject smsObject)
         {
-            Boolean useMockData = true;
+            Boolean useMockData = smsObject.isUseMockData;
             //https://www.plivo.com/pricing/JP/#!sms   .04 per sms
             //Twilio                                   .075 per sms
 
@@ -65,7 +65,8 @@ public class StoryAddRequest
                         from: new PhoneNumber(twillioFromNumber), // From number, must be an SMS-enabled Twilio number
                         to: new PhoneNumber(person.Phone), // To number, if using Sandbox see note above
                         // Message content
-                        body: $"Hey {person.FirstName} {person.LastName} Monkey Party at 6PM. Bring Bananas!  Please respond in Facebook Messenger if you get this.  Let the SPAMMING begin!");
+                        // body: $"Hey {person.FirstName} {person.LastName} Monkey Party at 6PM. Bring Bananas!  Please respond in Facebook Messenger if you get this.  Let the SPAMMING begin!");
+                        body: $"Hey {person.FirstName} {person.LastName}.{Environment.NewLine}{smsObject.Message}");
                     
                     }catch(Exception e){
                         person.Message = e.Message;
