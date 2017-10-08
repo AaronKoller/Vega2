@@ -36,7 +36,7 @@ public class StoryAddRequest
         [HttpPost]
         // public async Task<IActionResult> SendSmsMessages([FromBody] IEnumerable<SmsMessage> smsMessages)
         // public async Task<IActionResult> SendSmsMessages([FromBody] IEnumerable<SmsMessage> smsMessages)
-        public async Task<IActionResult> SendSmsMessages([FromBody] SMSObject smsObject)
+        public IActionResult SendSmsMessages([FromBody] SMSObject smsObject)
         {
             Boolean useMockData = smsObject.isUseMockData;
             //https://www.plivo.com/pricing/JP/#!sms   .04 per sms
@@ -106,7 +106,6 @@ public class StoryAddRequest
     [Route("/api/batchSms/peopleProperties")]
     [HttpGet]
     public List<string> getbatchSMSPeopleProperties(){
-        PropertyInfo[] props = null;
  
         //  Get the properties for the type
         var smsObject = new SMS();

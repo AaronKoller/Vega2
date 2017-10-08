@@ -12,11 +12,13 @@ import { Router, ActivatedRoute } from "@angular/router";
 //shows service, html, component
 //https://stackoverflow.com/questions/45441962/how-to-upload-a-csv-file-and-read-them-using-angular2
 
-interface IMyEntity {
+interface CsvObject {
   Phone: number;
   FirstName: string;
   LastName: string;
-  Message: string;
+  RawMessage: string;
+  HtmlMessage: string;
+  MsgLength: number;
   Status: boolean;
 }
 
@@ -39,9 +41,9 @@ export class BatchSmsComponent implements OnInit {
   data: any[];
   error: any[]; 
   results: any[] = new Array();
-  resultsOK: IMyEntity[] = new Array();
-  resultsBAD: IMyEntity[] = new Array();
-  csvData : any[] = new Array();
+  resultsOK: CsvObject[] = new Array();
+  resultsBAD: CsvObject[] = new Array();
+  csvData : CsvObject[] = new Array();
   selectedRow : Number;
   setClickedRow : Function;
   isError : Boolean = false;
@@ -100,28 +102,57 @@ export class BatchSmsComponent implements OnInit {
   }
 
   public textAreaChange(newValue) {
-    this.message = newValue;
-    this.messageLength = this.message.length;
-    this.sendSMSDisable();
-    this.messagePreview = this.message;
 
+    this.message = newValue;
+    this.messageLength = 0;
+    //If there is no message yet then exit
+    if(!this.message){
+
+      return;
+    }
+
+    this.messageLength = this.message.length;
+    this.sendSMS_DisableButton();
+
+    //create the preview message -- when there is no CSV Data
+    //convert new lines to <br>
+    var htmlMessage =  this.message.replace(/(?:\r\n|\r|\n)/g, '<br />');
+    this.messagePreview = htmlMessage;
+
+    //if there is CSVData then process all messages in there too
     if(!this.csvData || this.csvData.length === 0){
       return;
     }
-    var newMessage = this.message
-    var first;
+    this.messageLength = 0;
+    for(let csvRow of this.csvData){
+      var returnMsg = this.previewMessage(this.tokens, htmlMessage, this.message, csvRow)
+      csvRow.HtmlMessage = returnMsg.htmlMsg;
+      csvRow.RawMessage = returnMsg.rawMsg;
+      csvRow.MsgLength = returnMsg.rawLength;
+      if(returnMsg.rawLength > this.messageLength){
+        this.messageLength = returnMsg.rawLength
+      }
+    }
 
+    //get the csvData from the selected ROW
     var test = Number(this.selectedRow);
     if(this.selectedRow >= 0){
-      first = this.csvData[test];
+      this.messagePreview = this.csvData[test].RawMessage;
     }else{
-      first = this.csvData[0];
+      this.messagePreview = this.csvData[0].RawMessage;
     }
-    for (let token of this.tokens){
-      newMessage = newMessage.replace("["+token+"]","<strong>" + first[token] + "</strong>");
-    }
-    this.messagePreview = newMessage;
+  }
 
+  public previewMessage(tokens,  htmlMessage, rawMessage, csvDataRow){
+    var returnMsg = {htmlMsg: htmlMessage, rawMsg: rawMessage, rawLength: 0} 
+    for (let token of this.tokens){
+      // returnMsg.htmlMsg = returnMsg.htmlMsg.replace(new RegExp("\\["+token+"\\]", 'g'), "<span class='highlight'>" + csvDataRow[token] + "</span>");
+      returnMsg.htmlMsg = returnMsg.htmlMsg.replace(new RegExp("\\["+token+"\\]", 'g'), "<strong>" + csvDataRow[token] + "</strong>");
+      returnMsg.rawMsg = returnMsg.rawMsg.replace(new RegExp("\\["+token+"\\]", 'g'), csvDataRow[token]);
+    }
+    returnMsg.rawLength = returnMsg.rawMsg.length;
+
+    return returnMsg;
   }
 
   public changeListener($event: any) {
@@ -147,16 +178,16 @@ export class BatchSmsComponent implements OnInit {
 
       //remove blank phone numbers
       self.csvData = self.csvData.filter(item => item.Phone !== 0);
-      self.sendSMSDisable();
+      self.sendSMS_DisableButton();
       self.textAreaChange(self.message)
     };
   }
 
   public passwordChange(){
-    this.sendSMSDisable()
+    this.sendSMS_DisableButton()
   }
 
-  public sendSMSDisable(){
+  public sendSMS_DisableButton(){
     if(this.csvData.length == undefined || this.csvData.length === 0){
       this.isSMSDisabled = true;
       return;
@@ -194,14 +225,14 @@ export class BatchSmsComponent implements OnInit {
         //set all statuses to OK
         for(let data of self.csvData){
           data.Status = true;
-          data.Message = "";
+          data.RawMessage = "";
         }
 
         //take result message and put it on the CSVData
         for (let result of self.results) {
           for (let data of self.csvData) {
             if(data.Phone === Number(result.phone)){
-              data.Message = result.message;
+              data.RawMessage = result.message;
               data.Status = false;
               self.isError = true;
             }

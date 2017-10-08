@@ -24,6 +24,9 @@ hr.style13 {
 tr:nth-child(even) {background: #E7E7E7}
 tr:nth-child(odd) {background: #FFF}
 
+.highlight {
+    background-color: #ffc;
+}
 
 .table-hover tbody tr:hover {
     /* font-weight: bold; */

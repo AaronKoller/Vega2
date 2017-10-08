@@ -3,11 +3,11 @@
 <div class="container pull-left">
     <div class="row">
         <h1>Create a SMS message.</h1>
-        <strong>Message</strong>
+        <strong>Message: </strong><span *ngIf="messageLength > 0">{{messageLength}} of {{messageMaxLength}} characters entered.</span><span style="color: white">.</span>
+        
         <textarea class="form-control" [ngModel]="message" (ngModelChange)="textAreaChange($event)" [attr.maxlength]="messageMaxLength" ></textarea>
         <span>{{allowedTokensString}}</span><br>
-        <div [innerHTML]="messagePreview"></div>
-        <span *ngIf="messageLength > 0">{{messageLength}} of {{messageMaxLength}} characters entered.</span><span style="color: white">.</span>
+        <!-- <div [innerHTML]="messagePreview"></div> -->
     </div>
     <div class="row">
         <div class="col-3">
@@ -39,6 +39,7 @@
                 <th>Phone</th>
                 <th>First Name</th>
                 <th>Last Name</th>
+                <th>Message</th>
             </tr>
         </thead>
         <tbody>
@@ -46,6 +47,7 @@
                 <td>{{data.Phone}}</td>
                 <td>{{data.FirstName}}</td>
                 <td>{{data.LastName}}</td>
+                <td><div [innerHTML]="data.HtmlMessage"></div></td>
             </tr>
         </tbody>
     </table>
