@@ -5,6 +5,8 @@
         <h1>Create a SMS message.</h1>
         <strong>Message</strong>
         <textarea class="form-control" [ngModel]="message" (ngModelChange)="textAreaChange($event)" [attr.maxlength]="messageMaxLength" ></textarea>
+        <span>{{allowedTokensString}}</span><br>
+        <div [innerHTML]="messagePreview"></div>
         <span *ngIf="messageLength > 0">{{messageLength}} of {{messageMaxLength}} characters entered.</span><span style="color: white">.</span>
     </div>
     <div class="row">
@@ -24,6 +26,7 @@
             <span *ngIf="csvData.length != 0">
             </span>
         </div>
+        <!-- Tokens:<pre>{{tokens | json}}</pre> -->
 
 <div class="row">
 <div *ngIf="csvData.length != 0">

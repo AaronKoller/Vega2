@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
+using System.Reflection;
+using System.Linq;
 
 namespace Vega.Controllers
 {
@@ -54,19 +56,31 @@ public class StoryAddRequest
             // Initialize the Twilio client
             TwilioClient.Init(accountSid, authToken);
 
+            var smsProps = getbatchSMSPeopleProperties();
+
+            var smsObjectsProps = new SMS();
+            var properties = smsObjectsProps.GetType().GetProperties();
+
+
             var errors = new List<SMS>();
             //Iterate over all our friends
             if(!useMockData){
                 foreach (var person in smsObject.People)
                 {
                 try{
+                    string newMessage = smsObject.Message;
+                    foreach (var prop in properties) {
+                        string v = (string)prop.GetValue(person, null);
+                        newMessage = newMessage.Replace($"[{prop.Name}]", v);
+                    }
+
                     // Send a new outgoing SMS by POSTing to the Messages resource
                     MessageResource.Create(
                         from: new PhoneNumber(twillioFromNumber), // From number, must be an SMS-enabled Twilio number
-                        to: new PhoneNumber(person.Phone), // To number, if using Sandbox see note above
+                        to: new PhoneNumber($"+{person.Phone}"), // To number, if using Sandbox see note above
                         // Message content
                         // body: $"Hey {person.FirstName} {person.LastName} Monkey Party at 6PM. Bring Bananas!  Please respond in Facebook Messenger if you get this.  Let the SPAMMING begin!");
-                        body: $"Hey {person.FirstName} {person.LastName}.{Environment.NewLine}{smsObject.Message}");
+                        body: $"{newMessage}");
                     
                     }catch(Exception e){
                         person.Message = e.Message;
@@ -89,5 +103,23 @@ public class StoryAddRequest
             }
             return Ok(errors);
         }
+    [Route("/api/batchSms/peopleProperties")]
+    [HttpGet]
+    public List<string> getbatchSMSPeopleProperties(){
+        PropertyInfo[] props = null;
+ 
+        //  Get the properties for the type
+        var smsObject = new SMS();
+
+        var properties = smsObject.GetType().GetProperties();
+
+        var SMSProperties = new List<string>();
+
+        foreach (var p in properties)
+        {
+            SMSProperties.Add(p.Name);
+        }
+        return SMSProperties;
+    }
     }
 }

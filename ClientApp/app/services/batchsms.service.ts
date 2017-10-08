@@ -14,5 +14,11 @@ export class BatchSmsService {
     .map(res => 
       res.json())
   }
-}
+  getbatchSMSPeopleProperties(){
+    return this.http.get('/api/batchSms/peopleProperties')
+    .map(res => 
+      res.json())
+  }
+  }
+
 //Papa csv parser -- http://papaparse.com/

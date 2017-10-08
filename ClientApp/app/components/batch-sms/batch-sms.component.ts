@@ -1,3 +1,4 @@
+import { DataTableModule } from 'primeng/components/datatable/datatable';
 import { Headers } from '@angular/http';
 import { ToastyModule, ToastyService } from 'ng2-toasty';
 import { BatchSmsService } from './../../services/batchsms.service';
@@ -54,6 +55,9 @@ export class BatchSmsComponent implements OnInit {
   passwordError: string;
   generalError: string;
   isUseMockData = false;
+  tokens: any[];
+  allowedTokensString: string;
+  messagePreview: string;
 
 
   //
@@ -68,10 +72,16 @@ export class BatchSmsComponent implements OnInit {
 
     //set the clicked row so that we can select it
     this.setClickedRow = function(index){
-      this.selectedRow = index;}
+      this.selectedRow = index;
+      this.textAreaChange(this.message)}
   }
 
   ngOnInit() {
+    this.BatchSmsService.getbatchSMSPeopleProperties()
+    .subscribe(data => {
+      this.tokens = data;
+      this.allowedTokensString ="Allowed tokens: [" + this.tokens.join("], [") + "]";
+    })
   }
 
   public resultsMessage(){
@@ -92,7 +102,26 @@ export class BatchSmsComponent implements OnInit {
   public textAreaChange(newValue) {
     this.message = newValue;
     this.messageLength = this.message.length;
-    this.sendSMSDisable()
+    this.sendSMSDisable();
+    this.messagePreview = this.message;
+
+    if(!this.csvData || this.csvData.length === 0){
+      return;
+    }
+    var newMessage = this.message
+    var first;
+
+    var test = Number(this.selectedRow);
+    if(this.selectedRow >= 0){
+      first = this.csvData[test];
+    }else{
+      first = this.csvData[0];
+    }
+    for (let token of this.tokens){
+      newMessage = newMessage.replace("["+token+"]","<strong>" + first[token] + "</strong>");
+    }
+    this.messagePreview = newMessage;
+
   }
 
   public changeListener($event: any) {
@@ -119,7 +148,7 @@ export class BatchSmsComponent implements OnInit {
       //remove blank phone numbers
       self.csvData = self.csvData.filter(item => item.Phone !== 0);
       self.sendSMSDisable();
-
+      self.textAreaChange(self.message)
     };
   }
 
