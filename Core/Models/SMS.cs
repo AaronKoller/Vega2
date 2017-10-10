@@ -7,10 +7,7 @@ namespace Vega.Core.Models
         public string Phone {get; set;}
         public string FirstName {get; set;}
         public string LastName {get; set;}
-
         public string Message {get; set;}
-
-        public string NewToken {get; set;}
     }
 
     public class SMSObject{

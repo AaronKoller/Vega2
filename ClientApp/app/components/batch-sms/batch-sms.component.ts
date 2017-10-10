@@ -60,6 +60,8 @@ export class BatchSmsComponent implements OnInit {
   tokens: any[];
   allowedTokensString: string;
   messagePreview: string;
+  cost: number;
+  costPerMessage = 8;
 
 
   //
@@ -159,7 +161,6 @@ export class BatchSmsComponent implements OnInit {
 
     var self = this;
     self.results = new Array();;
-    // self.resultsBAD = new Array();;
     var file:File = $event.target.files[0];
     self.csvName = file.name;
     var myReader:FileReader = new FileReader();
@@ -180,6 +181,7 @@ export class BatchSmsComponent implements OnInit {
       self.csvData = self.csvData.filter(item => item.Phone !== 0);
       self.sendSMS_DisableButton();
       self.textAreaChange(self.message)
+      self.cost = self.csvData.length * self.costPerMessage;
     };
   }
 

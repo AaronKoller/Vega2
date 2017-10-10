@@ -9,10 +9,24 @@
 }
 
 textarea {
-    max-width: 500px; 
+    /* max-width: 500px;  */
     max-height: 80px;
     height: 80px;
     resize: none;
+}
+
+.box {
+    text-align: center;
+    font-family: arial;
+    font-size: 20px;
+    padding: 5px;
+    border: 2px solid red;
+    font-weight: bold;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    position: relative;
+    top: -3px;
 }
 
 hr.style13 {
@@ -26,6 +40,11 @@ tr:nth-child(odd) {background: #FFF}
 
 .highlight {
     background-color: #ffc;
+}
+
+.large{
+    color: red;
+    font-size: 150%;
 }
 
 .table-hover tbody tr:hover {

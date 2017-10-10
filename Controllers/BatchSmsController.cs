@@ -14,6 +14,10 @@ using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 using System.Reflection;
 using System.Linq;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Text;
+using System.Net.Http.Headers;
 
 namespace Vega.Controllers
 {
@@ -23,17 +27,52 @@ public class StoryAddRequest
 }
 
 
+// public class PlivioSMSPost{
+//     public string src {get; set;}
+//     public string dst {get; set;}
+//     public string text {get; set;}
+
+// }
+
+
     [Route("/api/batchSms")]
     public class BatchSmsController : Controller
     {
-        // [HttpPut]
-        // public async Task<IActionResult> PutSmsMessages([FromBody] StoryAddRequest smsMessages){
 
-        //     await SendSmsMessages(smsMessages);
-        //     return Ok();
-        // }
+//     [HttpPost]
+//     [Route("/api/batchSms1")]
+//     public async Task<IActionResult> CreateProductAsync()
+//     {
+
+//         PlivioSMSPost smsPost = new PlivioSMSPost{
+//             src = "15093809676",
+//             dst = "19712830079",
+//             text = "This is a first test."
+//         };
+
+//         string auth_id = "MAMTBLMZHHN2MWMZRINJx";
+//         string token_id = "OWI0YWVkM2FiYzM5YjBkMTM4YTI5YjI5YmFhNDdm";
+
+//         HttpClient client = new HttpClient();
+//         // client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("MAMTBLMZHHN2MWMZRINJx", "");
+// client.DefaultRequestHeaders.Authorization = 
+//     new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(
+//                 string.Format("{0}:{1}", auth_id, token_id))));
+
+//         string url = $"https://api.plivo.com/v1/Account/{auth_id}/Message/";
+//         var stringContent = new StringContent(JsonConvert.SerializeObject(smsPost), Encoding.UTF8, "application/json");
+//         var response = await client.PostAsync(url, stringContent);
+
+
+//         var response2 = await client.PostAsync("api/products", stringContent);
+//         response.EnsureSuccessStatusCode();
+
+//         // Return the URI of the created resource.
+//         return Ok();
+//     }
 
         [HttpPost]
+
         // public async Task<IActionResult> SendSmsMessages([FromBody] IEnumerable<SmsMessage> smsMessages)
         // public async Task<IActionResult> SendSmsMessages([FromBody] IEnumerable<SmsMessage> smsMessages)
         public IActionResult SendSmsMessages([FromBody] SMSObject smsObject)
