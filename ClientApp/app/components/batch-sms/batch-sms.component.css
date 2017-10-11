@@ -2,6 +2,8 @@
     display: none !important;
   }
 
+
+
 .btn-default {
     background-color: #337ab7;
     border-color: #2e6da4;
@@ -27,6 +29,7 @@ textarea {
     border-radius: 5px;
     position: relative;
     top: -3px;
+    left: -10px
 }
 
 hr.style13 {

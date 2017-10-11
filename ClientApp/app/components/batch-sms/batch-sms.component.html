@@ -1,8 +1,10 @@
 <!-- angular 2 datagrid  https://valor-software.com/ng2-table/ -->
+
+sms Disabled: {{isSMSDisabled}}
 <div class="container pull-left">
     <div class="row">
         <h1>Create a SMS message.</h1>
-        <div class="col-xs-7">
+        <div class="col-xs-9">
             <strong>Message: </strong>
             <span *ngIf="messageLength > 0">{{messageLength}} of {{messageMaxLength}} characters entered.</span>
             <span style="color: white">.</span>
@@ -14,7 +16,7 @@
         <!-- <div [innerHTML]="messagePreview"></div> -->
     </div>
     <div class="row">
-        <div class="col-xs-7">
+        <div class="col-xs-9">
             <br>
             <strong>Password</strong>
             <br>
@@ -24,44 +26,46 @@
             <label class="btn btn-default ">Upload Names
                 <input type="file" hidden (change)='changeListener($event)'>
             </label>
-            <button [disabled]="isSMSDisabled" class="btn btn-default " type="submit" (click)="sendSMS($event)" id="test">Send SMS</button>
             <!-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
-        <span *ngIf="csvData.length != 0" class="box pull-right">&nbsp;&nbsp;{{cost | currency:'JPY':true:'1.0-0'}}&nbsp;&nbsp;</span>
-        </div>
+            <button [disabled]="isSMSDisabled" class="btn btn-default pull-right" type="submit" (click)="sendSMS($event)" id="test">Send SMS</button>
 
-        <!-- Tokens:<pre>{{tokens | json}}</pre> -->
-        <div *ngIf="csvData.length != 0">
-            <div class="row">
-                <div class="col-xs-10">
-                    <!-- <hr class="style13"> -->
-                    <!-- <h3>
-                        <strong>'{{csvName}}':</strong> {{csvData.length}} name{{csvData.length > 1 ? "s" : ""}} imported.</h3> -->
-                </div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-xs-10">
-                    <table class="table table-hover table-inverse">
-                        <thead>
-                            <tr>
-                                <th>Phone</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Message</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let data of csvData; let i = index" (click)="setClickedRow(i)" [class.active]="i == selectedRow">
-                                <td>{{data.Phone}}</td>
-                                <td>{{data.FirstName}}</td>
-                                <td>{{data.LastName}}</td>
-                                <td>
-                                    <div [innerHTML]="data.HtmlMessage"></div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <span *ngIf="smsFields.length != 0" class="box pull-right">&nbsp;&nbsp;{{cost | currency:'JPY':true:'1.0-0'}}&nbsp;&nbsp;</span>
+
+        </div>
+    </div>
+
+    <!-- Tokens:<pre>{{tokens | json}}</pre> -->
+    <div class="row">
+        <div class="col-xs-9">
+            <div *ngIf="smsFields.length != 0">
+
+                <!-- <hr class="style13"> -->
+                <!-- <h3>
+                        <strong>'{{csvName}}':</strong> {{smsFields.length}} name{{smsFields.length > 1 ? "s" : ""}} imported.</h3> -->
+
+                <br>
+
+                <table class="table table-hover table-inverse">
+                    <thead>
+                        <tr>
+                            <th>Phone</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let data of smsFields; let i = index" (click)="setClickedRow(i)" [class.active]="i == selectedRow">
+                            <td>{{data.Phone}}</td>
+                            <td>{{data.FirstName}}</td>
+                            <td>{{data.LastName}}</td>
+                            <td>
+                                <div [innerHTML]="data.HtmlMessage"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
             </div>
             <div *ngIf="results.length != 0">
                 <hr class="style13">
@@ -86,7 +90,7 @@
                             <td>{{result.Phone}}</td>
                             <td>{{result.FirstName}}</td>
                             <td>{{result.LastName}}</td>
-                            <td>{{result.Message}}</td>
+                            <td>{{result.RawMessage}}</td>
                         </tr>
                     </tbody>
                 </table>

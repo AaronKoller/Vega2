@@ -2,17 +2,17 @@ import { DataTableModule } from 'primeng/components/datatable/datatable';
 import { Headers } from '@angular/http';
 import { ToastyModule, ToastyService } from 'ng2-toasty';
 import { BatchSmsService } from './../../services/batchsms.service';
-//PapaParse https://www.npmjs.com/package/ngx-papaparse
-//PapaParse Angular 2 wrapper: https://www.npmjs.com/package/ngx-papaparse
 import { PapaParseService } from 'ngx-papaparse';
 
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from "@angular/router"; 
 
+//https://angular.io/guide/styleguide
+
 //shows service, html, component
 //https://stackoverflow.com/questions/45441962/how-to-upload-a-csv-file-and-read-them-using-angular2
 
-interface CsvObject {
+interface SMSFields {
   Phone: number;
   FirstName: string;
   LastName: string;
@@ -22,9 +22,21 @@ interface CsvObject {
   Status: boolean;
 }
 
+export class SMSMessage{
+  Phone: string;
+  Message: string;
+  Error: string;
+  constructor(phone: string, message: string, error: string) {
+    this.Phone = phone;
+    this.Message = message;
+    this.Error = error;
+}
+// constructor(public x: number, public y: number) {}
+}
+
 interface SMSObject {
-  people: any[];
-  message: string;
+  Messages: SMSMessage[];
+  // message: string;
   password: string;
   isUseMockData: boolean;
 };
@@ -41,9 +53,9 @@ export class BatchSmsComponent implements OnInit {
   data: any[];
   error: any[]; 
   results: any[] = new Array();
-  resultsOK: CsvObject[] = new Array();
-  resultsBAD: CsvObject[] = new Array();
-  csvData : CsvObject[] = new Array();
+  resultsOK: SMSFields[] = new Array();
+  resultsBAD: SMSFields[] = new Array();
+  smsFields : SMSFields[] = new Array();
   selectedRow : Number;
   setClickedRow : Function;
   isError : Boolean = false;
@@ -56,7 +68,7 @@ export class BatchSmsComponent implements OnInit {
   resultMessage: string;
   passwordError: string;
   generalError: string;
-  isUseMockData = false;
+  isUseMockData = true;
   tokens: any[];
   allowedTokensString: string;
   messagePreview: string;
@@ -122,11 +134,11 @@ export class BatchSmsComponent implements OnInit {
     this.messagePreview = htmlMessage;
 
     //if there is CSVData then process all messages in there too
-    if(!this.csvData || this.csvData.length === 0){
+    if(!this.smsFields || this.smsFields.length === 0){
       return;
     }
     this.messageLength = 0;
-    for(let csvRow of this.csvData){
+    for(let csvRow of this.smsFields){
       var returnMsg = this.previewMessage(this.tokens, htmlMessage, this.message, csvRow)
       csvRow.HtmlMessage = returnMsg.htmlMsg;
       csvRow.RawMessage = returnMsg.rawMsg;
@@ -139,9 +151,9 @@ export class BatchSmsComponent implements OnInit {
     //get the csvData from the selected ROW
     var test = Number(this.selectedRow);
     if(this.selectedRow >= 0){
-      this.messagePreview = this.csvData[test].RawMessage;
+      this.messagePreview = this.smsFields[test].RawMessage;
     }else{
-      this.messagePreview = this.csvData[0].RawMessage;
+      this.messagePreview = this.smsFields[0].RawMessage;
     }
   }
 
@@ -175,13 +187,13 @@ export class BatchSmsComponent implements OnInit {
       for (let entry of data.data) {
         entry.Phone = Number(entry.Phone);
       }
-      self.csvData = data.data;
+      self.smsFields = data.data;
 
       //remove blank phone numbers
-      self.csvData = self.csvData.filter(item => item.Phone !== 0);
+      self.smsFields = self.smsFields.filter(item => item.Phone !== 0);
       self.sendSMS_DisableButton();
       self.textAreaChange(self.message)
-      self.cost = self.csvData.length * self.costPerMessage;
+      self.cost = self.smsFields.length * self.costPerMessage;
     };
   }
 
@@ -190,7 +202,7 @@ export class BatchSmsComponent implements OnInit {
   }
 
   public sendSMS_DisableButton(){
-    if(this.csvData.length == undefined || this.csvData.length === 0){
+    if(this.smsFields.length == undefined || this.smsFields.length === 0){
       this.isSMSDisabled = true;
       return;
     }
@@ -209,12 +221,20 @@ export class BatchSmsComponent implements OnInit {
     var self = this;
     self.generalError = "";
     self.passwordError = "";
-    if(self.csvData.length == 0)
+    if(self.smsFields.length == 0)
       return
 
+    var smsMessages : SMSMessage[] = new Array();
+    for(let field of self.smsFields){
+        smsMessages.push(new SMSMessage(
+          field.Phone.toString(),
+          field.RawMessage,
+          ""))
+    }
+
+
     var smsObject: SMSObject = {
-      people:  self.csvData,
-      message: self.message,
+      Messages: smsMessages,
       password: self.password,
       isUseMockData: self.isUseMockData
     };
@@ -224,17 +244,18 @@ export class BatchSmsComponent implements OnInit {
         self.isError = false;
         self.resultsOK = [];
         self.resultsBAD = [];
-        //set all statuses to OK
-        for(let data of self.csvData){
+
+        //reset all statuses to OK
+        for(let data of self.smsFields){
           data.Status = true;
           data.RawMessage = "";
         }
 
-        //take result message and put it on the CSVData
+        //put error messages on the smsFields
         for (let result of self.results) {
-          for (let data of self.csvData) {
+          for (let data of self.smsFields) {
             if(data.Phone === Number(result.phone)){
-              data.RawMessage = result.message;
+              data.RawMessage = result.error;
               data.Status = false;
               self.isError = true;
             }
@@ -242,7 +263,7 @@ export class BatchSmsComponent implements OnInit {
         }
 
         //split results to OK and BAD arrays
-        for(let data of self.csvData){
+        for(let data of self.smsFields){
           if(data.Status){
             self.resultsOK.push(data);
           }else{
@@ -258,7 +279,7 @@ export class BatchSmsComponent implements OnInit {
           self.results.push(result)
         }
 
-        self.csvData = new Array();;
+        self.smsFields = new Array();;
         self.resultsMessage();
       },err =>{
         var errorMessage = err._body

@@ -6,19 +6,16 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class BatchSmsService {
 
-  
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   sendSmsMessages(smsList) {
     return this.http.post('api/batchSms', smsList)
-    .map(res => 
-      res.json())
+      .map(res =>
+        res.json())
   }
-  getbatchSMSPeopleProperties(){
-    return this.http.get('/api/batchSms/peopleProperties')
-    .map(res => 
-      res.json())
+  getbatchSMSPeopleProperties() {
+    return this.http.get('/api/batchSms/getSMSFields')
+      .map(res =>
+        res.json())
   }
-  }
-
-//Papa csv parser -- http://papaparse.com/
+}
