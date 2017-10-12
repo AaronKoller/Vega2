@@ -17,6 +17,19 @@ textarea {
     resize: none;
 }
 
+.number{
+    width: 10px;
+}
+
+
+.bottom-align-text {
+    position: relative;
+    bottom: -30px;
+  }
+
+
+
+
 .box {
     text-align: center;
     font-family: arial;

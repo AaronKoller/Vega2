@@ -1,9 +1,7 @@
 <!-- angular 2 datagrid  https://valor-software.com/ng2-table/ -->
-
-sms Disabled: {{isSMSDisabled}}
 <div class="container pull-left">
     <div class="row">
-        <h1>Create a SMS message.</h1>
+        <h1>Send SMS Messages.</h1>
         <div class="col-xs-9">
             <strong>Message: </strong>
             <span *ngIf="messageLength > 0">{{messageLength}} of {{messageMaxLength}} characters entered.</span>
@@ -15,22 +13,26 @@ sms Disabled: {{isSMSDisabled}}
         </div>
         <!-- <div [innerHTML]="messagePreview"></div> -->
     </div>
-    <div class="row">
-        <div class="col-xs-9">
+    <div class="row ">
+        <div class="col-sm-4">
             <br>
             <strong>Password</strong>
             <br>
             <input [(ngModel)]="password" type="text" (ngModelChange)="passwordChange($event)">
             <span *ngIf="passwordError" class="alert alert-danger">{{passwordError}}</span>
-
+        </div>
+        <div class="bottom-align-text  col-xs-5 ">
             <label class="btn btn-default ">Upload Names
                 <input type="file" hidden (change)='changeListener($event)'>
             </label>
+        <!-- </div>
+        <div class="bottom-align-text col-sm-2 "> -->
             <!-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
-            <button [disabled]="isSMSDisabled" class="btn btn-default pull-right" type="submit" (click)="sendSMS($event)" id="test">Send SMS</button>
-
+            <button [disabled]="isSMSDisabled" class="btn btn-default pull-right" type="submit" (click)="sendSMS($event)" id="test">
+                <span *ngIf="!isProcessing">Send SMS</span>
+                <span *ngIf="isProcessing">Sending...</span>
+            </button>
             <span *ngIf="smsFields.length != 0" class="box pull-right">&nbsp;&nbsp;{{cost | currency:'JPY':true:'1.0-0'}}&nbsp;&nbsp;</span>
-
         </div>
     </div>
 
@@ -48,6 +50,7 @@ sms Disabled: {{isSMSDisabled}}
                 <table class="table table-hover table-inverse">
                     <thead>
                         <tr>
+                            <th class="number">#</th>
                             <th>Phone</th>
                             <th>First Name</th>
                             <th>Last Name</th>
@@ -56,6 +59,7 @@ sms Disabled: {{isSMSDisabled}}
                     </thead>
                     <tbody>
                         <tr *ngFor="let data of smsFields; let i = index" (click)="setClickedRow(i)" [class.active]="i == selectedRow">
+                            <td class="number">{{i + 1}}.</td>
                             <td>{{data.Phone}}</td>
                             <td>{{data.FirstName}}</td>
                             <td>{{data.LastName}}</td>
@@ -67,7 +71,7 @@ sms Disabled: {{isSMSDisabled}}
                 </table>
 
             </div>
-            <div *ngIf="results.length != 0">
+            <div *ngIf="resultsALL.length != 0">
                 <hr class="style13">
                 <h3 *ngIf="generalError" class="alert alert-danger">{{generalError}}></h3>
                 <h3>{{resultMessage}}</h3>
@@ -75,18 +79,20 @@ sms Disabled: {{isSMSDisabled}}
                 <table class="table table-hover table-inverse">
                     <thead>
                         <tr>
+                            <th class="number">#</th>
                             <th>Status</th>
                             <th>Phone</th>
                             <th>First Name</th>
                             <th>Last Name</th>
-                            <th>Message</th>
+                            <th>Error Message</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let result of results; let i = index" (click)="setClickedRow(i)" [class.active]="i == selectedRow">
+                        <tr *ngFor="let result of resultsALL; let i = index" (click)="setClickedRow(i)" [class.active]="i == selectedRow">
                             <td>
                                 <span [ngClass]="result.Status ? 'glyphicon glyphicon-ok green' : 'glyphicon glyphicon-remove red'"></span>
                             </td>
+                            <td class="number">{{i + 1}}.</td>
                             <td>{{result.Phone}}</td>
                             <td>{{result.FirstName}}</td>
                             <td>{{result.LastName}}</td>

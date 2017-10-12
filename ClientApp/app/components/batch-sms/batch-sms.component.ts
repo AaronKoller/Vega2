@@ -5,7 +5,7 @@ import { BatchSmsService } from './../../services/batchsms.service';
 import { PapaParseService } from 'ngx-papaparse';
 
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from "@angular/router"; 
+import { Router, ActivatedRoute } from "@angular/router";
 
 //https://angular.io/guide/styleguide
 
@@ -22,7 +22,7 @@ interface SMSFields {
   Status: boolean;
 }
 
-export class SMSMessage{
+export class SMSMessage {
   Phone: string;
   Message: string;
   Error: string;
@@ -30,8 +30,7 @@ export class SMSMessage{
     this.Phone = phone;
     this.Message = message;
     this.Error = error;
-}
-// constructor(public x: number, public y: number) {}
+  }
 }
 
 interface SMSObject {
@@ -48,69 +47,70 @@ interface SMSObject {
 })
 
 export class BatchSmsComponent implements OnInit {
-  smsList: any[];
   text: any[];
   data: any[];
-  error: any[]; 
-  results: any[] = new Array();
+  error: any[];
+  resultsALL: any[] = new Array();
   resultsOK: SMSFields[] = new Array();
   resultsBAD: SMSFields[] = new Array();
-  smsFields : SMSFields[] = new Array();
-  selectedRow : Number;
-  setClickedRow : Function;
-  isError : Boolean = false;
-  message : string;
-  messageLength : Number;
+  smsFields: SMSFields[] = new Array();
+  selectedRow: Number;
+  setClickedRow: Function;
+  isError: Boolean = false;
+  message: string;
+  messageLength: Number;
   messageMaxLength = 80;
-  csvName : string;
-  password : string;
+  csvName: string;
+  password: string;
   isSMSDisabled = true;
   resultMessage: string;
   passwordError: string;
   generalError: string;
-  isUseMockData = true;
+  isUseMockData = false;
   tokens: any[];
   allowedTokensString: string;
   messagePreview: string;
   cost: number;
   costPerMessage = 8;
+  isProcessing = false;
 
 
   //
 
-  constructor(    
+  constructor(
     private route: ActivatedRoute,
     private router: Router,
     private ToastyService: ToastyService,
     private BatchSmsService: BatchSmsService,
     private papa: PapaParseService
-  ) { 
+  ) {
 
     //set the clicked row so that we can select it
-    this.setClickedRow = function(index){
+    this.setClickedRow = function (index) {
       this.selectedRow = index;
-      this.textAreaChange(this.message)}
+      this.textAreaChange(this.message)
+    }
   }
 
   ngOnInit() {
     this.BatchSmsService.getbatchSMSPeopleProperties()
-    .subscribe(data => {
-      this.tokens = data;
-      this.allowedTokensString ="Allowed tokens: [" + this.tokens.join("], [") + "]";
-    })
+      .subscribe(data => {
+        this.tokens = data;
+        this.allowedTokensString = "Allowed tokens: [" + this.tokens.join("], [") + "]";
+      })
   }
 
-  public resultsMessage(){
-    if(this.resultsOK == undefined || this.resultsBAD == undefined){
+  public resultsMessage() {
+    if (this.resultsOK == undefined || this.resultsBAD == undefined) {
       this.resultMessage = "";
       return;
-    }   
+    }
 
     var resultsOKPlural = this.resultsOK.length == 1 ? "" : "es";
     this.resultMessage = this.resultsOK.length + " message" + resultsOKPlural + " sent.";
-    if(this.resultsBAD.length > 0){
+    if (this.resultsBAD.length > 0) {
       var resultsBADPlural = this.resultsBAD.length == 1 ? "" : "s";
-      this.resultMessage = this.resultMessage.slice(0, -1) + " -- " + this.resultsBAD.length + " error" +resultsBADPlural+"."
+      this.resultMessage = this.resultMessage.slice(0, -1) + " -- " + this.resultsBAD.length + " error" + resultsBADPlural + "."
     }
     return;
   }
@@ -120,7 +120,7 @@ export class BatchSmsComponent implements OnInit {
     this.message = newValue;
     this.messageLength = 0;
     //If there is no message yet then exit
-    if(!this.message){
+    if (!this.message) {
 
       return;
     }
@@ -130,39 +130,39 @@ export class BatchSmsComponent implements OnInit {
 
     //create the preview message -- when there is no CSV Data
     //convert new lines to <br>
-    var htmlMessage =  this.message.replace(/(?:\r\n|\r|\n)/g, '<br />');
+    var htmlMessage = this.message.replace(/(?:\r\n|\r|\n)/g, '<br />');
     this.messagePreview = htmlMessage;
 
     //if there is CSVData then process all messages in there too
-    if(!this.smsFields || this.smsFields.length === 0){
+    if (!this.smsFields || this.smsFields.length === 0) {
       return;
     }
     this.messageLength = 0;
-    for(let csvRow of this.smsFields){
+    for (let csvRow of this.smsFields) {
       var returnMsg = this.previewMessage(this.tokens, htmlMessage, this.message, csvRow)
       csvRow.HtmlMessage = returnMsg.htmlMsg;
       csvRow.RawMessage = returnMsg.rawMsg;
       csvRow.MsgLength = returnMsg.rawLength;
-      if(returnMsg.rawLength > this.messageLength){
+      if (returnMsg.rawLength > this.messageLength) {
         this.messageLength = returnMsg.rawLength
       }
     }
 
     //get the csvData from the selected ROW
     var test = Number(this.selectedRow);
-    if(this.selectedRow >= 0){
+    if (this.selectedRow >= 0) {
       this.messagePreview = this.smsFields[test].RawMessage;
-    }else{
+    } else {
       this.messagePreview = this.smsFields[0].RawMessage;
     }
   }
 
-  public previewMessage(tokens,  htmlMessage, rawMessage, csvDataRow){
-    var returnMsg = {htmlMsg: htmlMessage, rawMsg: rawMessage, rawLength: 0} 
-    for (let token of this.tokens){
+  public previewMessage(tokens, htmlMessage, rawMessage, csvDataRow) {
+    var returnMsg = { htmlMsg: htmlMessage, rawMsg: rawMessage, rawLength: 0 }
+    for (let token of this.tokens) {
       // returnMsg.htmlMsg = returnMsg.htmlMsg.replace(new RegExp("\\["+token+"\\]", 'g'), "<span class='highlight'>" + csvDataRow[token] + "</span>");
-      returnMsg.htmlMsg = returnMsg.htmlMsg.replace(new RegExp("\\["+token+"\\]", 'g'), "<strong>" + csvDataRow[token] + "</strong>");
-      returnMsg.rawMsg = returnMsg.rawMsg.replace(new RegExp("\\["+token+"\\]", 'g'), csvDataRow[token]);
+      returnMsg.htmlMsg = returnMsg.htmlMsg.replace(new RegExp("\\[" + token + "\\]", 'g'), "<strong>" + csvDataRow[token] + "</strong>");
+      returnMsg.rawMsg = returnMsg.rawMsg.replace(new RegExp("\\[" + token + "\\]", 'g'), csvDataRow[token]);
     }
     returnMsg.rawLength = returnMsg.rawMsg.length;
 
@@ -172,15 +172,15 @@ export class BatchSmsComponent implements OnInit {
   public changeListener($event: any) {
 
     var self = this;
-    self.results = new Array();;
-    var file:File = $event.target.files[0];
+    self.resultsALL = new Array();;
+    var file: File = $event.target.files[0];
     self.csvName = file.name;
-    var myReader:FileReader = new FileReader();
+    var myReader: FileReader = new FileReader();
     myReader.readAsText(file);
     var resultSet = [];
 
-    myReader.onloadend = function(e){
-      var data = self.papa.parse(myReader.result,{header: true});
+    myReader.onloadend = function (e) {
+      var data = self.papa.parse(myReader.result, { header: true });
 
       //Validation
       //convert data to numbers where applicapable
@@ -197,39 +197,41 @@ export class BatchSmsComponent implements OnInit {
     };
   }
 
-  public passwordChange(){
+  public passwordChange() {
     this.sendSMS_DisableButton()
   }
 
-  public sendSMS_DisableButton(){
-    if(this.smsFields.length == undefined || this.smsFields.length === 0){
+  public sendSMS_DisableButton() {
+    if (this.smsFields.length == undefined || this.smsFields.length === 0) {
       this.isSMSDisabled = true;
       return;
     }
-    if(this.message == undefined || this.message.length === 0){
+    if (this.message == undefined || this.message.length === 0) {
       this.isSMSDisabled = true;
       return
     }
-    if(this.password == undefined || this.password.length === 0){
+    if (this.password == undefined || this.password.length === 0) {
       this.isSMSDisabled = true;
       return
     }
     this.isSMSDisabled = false;
   }
 
-  public sendSMS($event: any){
+  public sendSMS($event: any) {
     var self = this;
     self.generalError = "";
     self.passwordError = "";
-    if(self.smsFields.length == 0)
+    if (self.smsFields.length == 0)
       return
+    
+    self.isProcessing = true
 
-    var smsMessages : SMSMessage[] = new Array();
-    for(let field of self.smsFields){
-        smsMessages.push(new SMSMessage(
-          field.Phone.toString(),
-          field.RawMessage,
-          ""))
+    var smsMessages: SMSMessage[] = new Array();
+    for (let field of self.smsFields) {
+      smsMessages.push(new SMSMessage(
+        field.Phone.toString(),
+        field.RawMessage,
+        ""))
     }
 
 
@@ -238,23 +240,26 @@ export class BatchSmsComponent implements OnInit {
       password: self.password,
       isUseMockData: self.isUseMockData
     };
+    self.password = "";
+    self.sendSMS_DisableButton();
+    
     self.BatchSmsService.sendSmsMessages(smsObject)
       .subscribe(data => {
-        self.results = data;
+        self.resultsALL = data;
         self.isError = false;
-        self.resultsOK = [];
-        self.resultsBAD = [];
+        var resultsOK = [];
+        var resultsBAD = [];
 
         //reset all statuses to OK
-        for(let data of self.smsFields){
+        for (let data of self.smsFields) {
           data.Status = true;
           data.RawMessage = "";
         }
 
         //put error messages on the smsFields
-        for (let result of self.results) {
+        for (let result of self.resultsALL) {
           for (let data of self.smsFields) {
-            if(data.Phone === Number(result.phone)){
+            if (data.Phone === Number(result.phone)) {
               data.RawMessage = result.error;
               data.Status = false;
               self.isError = true;
@@ -263,32 +268,32 @@ export class BatchSmsComponent implements OnInit {
         }
 
         //split results to OK and BAD arrays
-        for(let data of self.smsFields){
-          if(data.Status){
+        for (let data of self.smsFields) {
+          if (data.Status) {
             self.resultsOK.push(data);
-          }else{
+          } else {
             self.resultsBAD.push(data);
           }
         }
-        self.results = new Array();
+        self.resultsALL = new Array();
         //set the custom order to have the bad items at the top
-        for(let result of self.resultsBAD){
-          self.results.push(result)
+        for (let result of self.resultsBAD) {
+          self.resultsALL.push(result)
         }
-        for(let result of self.resultsOK){
-          self.results.push(result)
+        for (let result of self.resultsOK) {
+          self.resultsALL.push(result)
         }
 
         self.smsFields = new Array();;
         self.resultsMessage();
-      },err =>{
+      }, err => {
         var errorMessage = err._body
-        if(errorMessage === "Invalid Password")
-        {
+        if (errorMessage === "Invalid Password") {
           self.passwordError = errorMessage;
-        }else{
+        } else {
           self.generalError = errorMessage;
         }
-      })
+      },() =>
+      self.isProcessing = false)
   }
 }

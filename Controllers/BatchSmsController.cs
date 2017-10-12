@@ -121,9 +121,10 @@ namespace Vega.Controllers
         [HttpGet]
         public List<string> getSMSFields()
         {
+            //do not allow these fields/tokens to be used.
             var ignoreFields = new List<string>{
                 "Message",
-                "Token"
+                "Error"
             };
             //  Get the properties for the type
             var fields = new SMSFields().GetType().GetProperties();
