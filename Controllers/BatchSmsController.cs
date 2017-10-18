@@ -18,51 +18,57 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Text;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Configuration;
 
 namespace Vega.Controllers
 {
 
-//     [HttpPost]
-//     [Route("/api/batchSms1")]
-//     public async Task<IActionResult> CreateProductAsync()
-//     {
-
-//         PlivioSMSPost smsPost = new PlivioSMSPost{
-//             src = "15093809676",
-//             dst = "19712830079",
-//             text = "This is a first test."
-//         };
-
-//         string auth_id = "MAMTBLMZHHN2MWMZRINJx";
-//         string token_id = "OWI0YWVkM2FiYzM5YjBkMTM4YTI5YjI5YmFhNDdm";
-
-//         HttpClient client = new HttpClient();
-//         // client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("MAMTBLMZHHN2MWMZRINJx", "");
-// client.DefaultRequestHeaders.Authorization = 
-//     new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(
-//                 string.Format("{0}:{1}", auth_id, token_id))));
-
-//         string url = $"https://api.plivo.com/v1/Account/{auth_id}/Message/";
-//         var stringContent = new StringContent(JsonConvert.SerializeObject(smsPost), Encoding.UTF8, "application/json");
-//         var response = await client.PostAsync(url, stringContent);
-
-
-//         var response2 = await client.PostAsync("api/products", stringContent);
-//         response.EnsureSuccessStatusCode();
-
-//         // Return the URI of the created resource.
-//         return Ok();
-//     }
-
-
-
     [Route("/api/batchSms")]
     public class BatchSmsController : Controller
     {
+        // Place to store the Config object and use in this controller
+        private readonly IConfiguration _config;
+        public BatchSmsController(IConfiguration config){
+            _config = config;
+        }
+
+    // [HttpPost]
+    // [Route("/api/batchSms1")]
+    // public async Task<IActionResult> CreateProductAsync()
+    // {
+    //     var x = _config["SMS:TwilioAPIKey"];
+    //     PlivioSMSPost smsPost = new PlivioSMSPost{
+    //         src = "15093809676",
+    //         dst = "19712830079",
+    //         text = "This is a first test."
+    //     };
+
+    //     string auth_id = "MAMTBLMZHHN2MWMZRINJx";
+    //     string token_id = "OWI0YWVkM2FiYzM5YjBkMTM4YTI5YjI5YmFhNDdm";
+
+    //     HttpClient client = new HttpClient();
+    //     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",Convert.ToBase64String(Encoding.UTF8.GetBytes($"{auth_id}:{token_id}")));
+    // // new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", auth_id, token_id))));
+    //     string url = $"https://api.plivo.com/v1/Account/{auth_id}/Message/";
+    //     var stringContent = new StringContent(JsonConvert.SerializeObject(smsPost), Encoding.UTF8, "application/json");
+    //     var response = await client.PostAsync(url, stringContent);
+
+
+    //     var response2 = await client.PostAsync("api/products", stringContent);
+    //     response.EnsureSuccessStatusCode();
+
+    //     // Return the URI of the created resource.
+    //     return Ok();
+    // }
+
+
+
+
         //Sends SMS posts to Twilio.  Uses really bad authentication just to prevent anyone from unauthorized use.
         [HttpPost]
         public IActionResult SendSmsMessages([FromBody] SMSObject smsObject)
         {
+            var x = _config["SMS:TwilioAPIKey"];
             Boolean useMockData = smsObject.isUseMockData;
             //https://www.plivo.com/pricing/JP/#!sms   .04 per sms
             //Twilio                                   .075 per sms
@@ -75,9 +81,12 @@ namespace Vega.Controllers
             //Ryan correct number: 819066247663,Ryan,Hagglund, banana
 
             // Your Account SID from twilio.com/console
-            var accountSidTwilio = "ACf67abf48da0c0e551fd6303b06bd42f7";
-            var authTokenTwilio = "9164d4e0c076685fcd0223f79615d114";
+            // var accountSidTwilio = "ACf67abf48da0c0e551fd6303b06bd42f7";
+            // var authTokenTwilio = "9164d4e0c076685fcd0223f79615d114";
+            var accountSidTwilio = _config["SMS:Twilio:AccountSid"];
+            var authTokenTwilio = _config["SMS:Twilio:AuthToken"];
             var fromNumberTwilio = "+12349013723";
+            //var fromNumberTwilio = "MyEigo";
             var errors = new List<SMSMessage>();
 
             // Initialize the Twilio client

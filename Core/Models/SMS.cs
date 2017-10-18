@@ -21,4 +21,11 @@ namespace Vega.Core.Models
         public string Password {get; set;}
         public bool isUseMockData {get; set;}
     }
+
+    // public class PlivioSMSPost{
+    //     public string src {get; set;}
+    //     public string dst {get; set;}
+    //     public string text {get; set;}
+        
+    // }
 }
