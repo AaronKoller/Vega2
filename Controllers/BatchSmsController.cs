@@ -94,8 +94,7 @@ namespace Vega.Controllers
 
             //var fromNumberTwilio = "+12349013723";
             var fromStringTwilio = _config["SMS:Twilio:FromString"];
-            var fromNumberTwilio = _config["SMS:Twilio:FromNumber"]; //ok
-            //var fromNumberTwilio = "MyEigo";
+            var fromNumberTwilio = _config["SMS:Twilio:FromNumber"];
             var errors = new List<SMSMessage>();
 
             // Initialize the Twilio client
