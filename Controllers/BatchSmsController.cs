@@ -28,38 +28,39 @@ namespace Vega.Controllers
     {
         // Place to store the Config object and use in this controller
         private readonly IConfiguration _config;
-        public BatchSmsController(IConfiguration config){
+        public BatchSmsController(IConfiguration config)
+        {
             _config = config;
         }
 
-    // [HttpPost]
-    // [Route("/api/batchSms1")]
-    // public async Task<IActionResult> CreateProductAsync()
-    // {
-    //     var x = _config["SMS:TwilioAPIKey"];
-    //     PlivioSMSPost smsPost = new PlivioSMSPost{
-    //         src = "15093809676",
-    //         dst = "19712830079",
-    //         text = "This is a first test."
-    //     };
+        // [HttpPost]
+        // [Route("/api/batchSms1")]
+        // public async Task<IActionResult> CreateProductAsync()
+        // {
+        //     var x = _config["SMS:TwilioAPIKey"];
+        //     PlivioSMSPost smsPost = new PlivioSMSPost{
+        //         src = "15093809676",
+        //         dst = "19712830079",
+        //         text = "This is a first test."
+        //     };
 
-    //     string auth_id = "MAMTBLMZHHN2MWMZRINJx";
-    //     string token_id = "OWI0YWVkM2FiYzM5YjBkMTM4YTI5YjI5YmFhNDdm";
+        //     string auth_id = "MAMTBLMZHHN2MWMZRINJx";
+        //     string token_id = "OWI0YWVkM2FiYzM5YjBkMTM4YTI5YjI5YmFhNDdm";
 
-    //     HttpClient client = new HttpClient();
-    //     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",Convert.ToBase64String(Encoding.UTF8.GetBytes($"{auth_id}:{token_id}")));
-    // // new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", auth_id, token_id))));
-    //     string url = $"https://api.plivo.com/v1/Account/{auth_id}/Message/";
-    //     var stringContent = new StringContent(JsonConvert.SerializeObject(smsPost), Encoding.UTF8, "application/json");
-    //     var response = await client.PostAsync(url, stringContent);
+        //     HttpClient client = new HttpClient();
+        //     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",Convert.ToBase64String(Encoding.UTF8.GetBytes($"{auth_id}:{token_id}")));
+        // // new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", auth_id, token_id))));
+        //     string url = $"https://api.plivo.com/v1/Account/{auth_id}/Message/";
+        //     var stringContent = new StringContent(JsonConvert.SerializeObject(smsPost), Encoding.UTF8, "application/json");
+        //     var response = await client.PostAsync(url, stringContent);
 
 
-    //     var response2 = await client.PostAsync("api/products", stringContent);
-    //     response.EnsureSuccessStatusCode();
+        //     var response2 = await client.PostAsync("api/products", stringContent);
+        //     response.EnsureSuccessStatusCode();
 
-    //     // Return the URI of the created resource.
-    //     return Ok();
-    // }
+        //     // Return the URI of the created resource.
+        //     return Ok();
+        // }
 
 
 
@@ -81,11 +82,19 @@ namespace Vega.Controllers
             //Ryan correct number: 819066247663,Ryan,Hagglund, banana
 
             // Your Account SID from twilio.com/console
+            //Aaron
             // var accountSidTwilio = "ACf67abf48da0c0e551fd6303b06bd42f7";
             // var authTokenTwilio = "9164d4e0c076685fcd0223f79615d114";
             var accountSidTwilio = _config["SMS:Twilio:AccountSid"];
             var authTokenTwilio = _config["SMS:Twilio:AuthToken"];
-            var fromNumberTwilio = "+12349013723";
+
+            //Ryan
+            // accountSidTwilio = "AC5a8e9ca61e822d8c8fe813b505bcee64";
+            // authTokenTwilio = "22d62a2f7fbfcc6281db3b7a5b7d5207";
+
+            //var fromNumberTwilio = "+12349013723";
+            var fromStringTwilio = _config["SMS:Twilio:FromString"];
+            var fromNumberTwilio = _config["SMS:Twilio:FromNumber"]; //ok
             //var fromNumberTwilio = "MyEigo";
             var errors = new List<SMSMessage>();
 
@@ -97,12 +106,31 @@ namespace Vega.Controllers
             {
                 foreach (var message in smsObject.Messages)
                 {
-                    try
+                    try //Apha From:
                     {
                         MessageResource.Create(
-                            from: new PhoneNumber(fromNumberTwilio), // From number, must be an SMS-enabled Twilio number
+                            from: new PhoneNumber(fromStringTwilio), // From number, must be an SMS-enabled Twilio number
                             to: new PhoneNumber($"+{message.Phone}"), // To number, if using Sandbox see note above
                             body: $"{message.Message}");
+                    }
+                    catch (Twilio.Exceptions.ApiException e)
+                    {
+                        if (e.Code == 21612)
+                        {
+                            try //numeric only from
+                            {
+                                MessageResource.Create(
+                                    from: new PhoneNumber(fromNumberTwilio), // From number, must be an SMS-enabled Twilio number
+                                    to: new PhoneNumber($"+{message.Phone}"), // To number, if using Sandbox see note above
+                                    body: $"{message.Message}");
+                            }
+                            catch (Exception ex)
+                            {
+                                errors.Add(new SMSMessage { Error = ex.Message, Phone = message.Phone });
+                            }
+                        }else{
+                            errors.Add(new SMSMessage { Error = e.Message, Phone = message.Phone });                          
+                        }
                     }
                     catch (Exception e)
                     {
@@ -114,12 +142,16 @@ namespace Vega.Controllers
             //if mock data then send sample errors
             else
             {
-                errors.Add(new SMSMessage { 
+                errors.Add(new SMSMessage
+                { 
                     Phone = "81906624",
-                    Error = "This is an error1"});
-                errors.Add(new SMSMessage { 
-                    Phone = "129038908" ,
-                    Error = "This is an error2"});
+                    Error = "This is an error1"
+                });
+                errors.Add(new SMSMessage
+                {
+                    Phone = "129038908",
+                    Error = "This is an error2"
+                });
             }
             return Ok(errors);
         }
