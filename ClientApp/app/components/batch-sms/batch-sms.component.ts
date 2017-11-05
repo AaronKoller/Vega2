@@ -59,7 +59,7 @@ export class BatchSmsComponent implements OnInit {
   isError: Boolean = false;
   message: string;
   messageLength: Number;
-  messageMaxLength = 160;
+  messageMaxLength = 180;
   csvName: string;
   password: string;
   isSMSDisabled = true;
